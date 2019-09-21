@@ -96,8 +96,8 @@ export default {
       let theta = Date.now() / 1000 /10 * Math.PI * 2;
       let x = Math.sin(theta);
       let z = Math.cos(theta);
-      let center = this.buildBounds.getCenter();
-      let exts = this.buildBounds.getSize().multiplyScalar(0.5);
+      let center = this.buildBounds.getCenter(new THREE.Vector3());
+      let exts = this.buildBounds.getSize(new THREE.Vector3()).multiplyScalar(0.5);
       this.cam.position.copy(center);
       this.cam.position.add(new THREE.Vector3(exts.x * 1.5 * x, exts.y * 1.5, exts.z * 1.5 * z));
       this.cam.lookAt(center.clone().add(new THREE.Vector3(exts.x * x, 0, exts.z * z)));
