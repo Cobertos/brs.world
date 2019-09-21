@@ -67,7 +67,8 @@ export class BRSMesh extends THREE.Mesh {
       //A 1x1 is 5,5,6, seemingly 10x10x12
       //Because our cube is 1x1x1, we need to multiple size to get the correct scale
       let scale = new THREE.Vector3(br.size[0]*2, br.size[2]*2, br.size[1]*2);
-      let color = brs.colors[br.color];
+      let color = Array.isArray(br.color) ? new THREE.Color(br.color[0]/255, br.color[1]/255, br.color[2]/255) :
+        brs.colors[br.color];
       
       instancePositions.push( pos.x, pos.y, pos.z );
       instanceQuaternions.push( quat.x, quat.y, quat.z, quat.w );
