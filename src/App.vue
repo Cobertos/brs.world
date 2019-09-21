@@ -1,16 +1,16 @@
 <template>
   <div id="app">
-    <BRSViewer />
+    <BRSUI />
   </div>
 </template>
 
 <script>
-import BRSViewer from './components/BRSViewer.vue'
+import BRSUI from './components/BRSUI.vue'
 
 export default {
   name: 'app',
   components: {
-    BRSViewer
+    BRSUI
   }
 }
 </script>
