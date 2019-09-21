@@ -47,7 +47,22 @@ export class BRSMesh extends THREE.Mesh {
         console.log(`Brick ${idx}`);
       }
       let pos = new THREE.Vector3(br.position[0], br.position[2], br.position[1]);
-      let quat = new THREE.Quaternion(0,0,0,1);
+      const axes = [
+        new THREE.Vector3(1,0,0),  //Brickadia +X => THREE.js +X
+        new THREE.Vector3(-1,0,0), //Brickadia -X => THREE.js -X
+        new THREE.Vector3(0,0,1),  //Brickadia +Y => THREE.js +Z
+        new THREE.Vector3(0,0,-1), //Brickadia -Y => THREE.js -Z
+        new THREE.Vector3(0,1,0),  //Brickadia +Z => THREE.js +Y
+        new THREE.Vector3(0,-1,0), //Brickadia -Z => THREE.js -Y
+      ];
+      const rots = [
+        0,
+        Math.PI/2,
+        Math.PI,
+        3*Math.PI/2
+      ];
+      let quat = new THREE.Quaternion().setFromAxisAngle(axes[br.direction], rots[br.rotation]);
+
       //A 1x1F is 5,5,2 size, seemingly meaning it's 10x10x4 units wide when playing around in game
       //A 1x1 is 5,5,6, seemingly 10x10x12
       //Because our cube is 1x1x1, we need to multiple size to get the correct scale
@@ -55,8 +70,8 @@ export class BRSMesh extends THREE.Mesh {
       let color = brs.colors[br.color];
       
       instancePositions.push( pos.x, pos.y, pos.z );
-          instanceQuaternions.push( quat.x, quat.y, quat.z, quat.w );
-          instanceScales.push( scale.x, scale.y, scale.z );
+      instanceQuaternions.push( quat.x, quat.y, quat.z, quat.w );
+      instanceScales.push( scale.x, scale.y, scale.z );
       instanceColors.push( color[0]/255, color[1]/255, color[2]/255 );
     });
     
