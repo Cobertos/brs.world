@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { BRSMesh } from './BRSMesh.js';
 
 /**Scene that holds the BRSMesh and all other default lighting
  * and objects
@@ -36,12 +37,29 @@ export class BRSViewerScene extends THREE.Scene {
         this.add(light);
 
         //Ground plane
+        new THREE.TextureLoader().load("brickgreen.png",(tex)=>{
+            tex.wrapS = THREE.RepeatWrapping;
+            tex.wrapT = THREE.RepeatWrapping;
+            //tex.anisotopy = 8;
+            groundMat.map = tex;
+        });
+        const groundMat = new THREE.MeshStandardMaterial( {
+            color: 0x00aa00,
+            map: undefined
+        } );
+        const groundPlaneSize = 100000;
         let groundPlane = new THREE.Mesh(
-            new THREE.PlaneBufferGeometry( 5, 20 ),
-            new THREE.MeshStandardMaterial( {color: 0x00aa00} ));
-        groundPlane.scale.set(100000,100000,100000);
+            new THREE.PlaneBufferGeometry( groundPlaneSize, groundPlaneSize ),
+            groundMat
+            );
+        let uv = groundPlane.geometry.getAttribute( 'uv' );
+        console.log(uv);
+        uv.array = uv.array.map((i)=>i*groundPlaneSize/BRSMesh.brickWidth());
+        uv.needsUpdate = true;
         groundPlane.quaternion.setFromAxisAngle(new THREE.Vector3(1,0,0), -Math.PI/2);
         groundPlane.frustumCulled = false;
         this.add(groundPlane);
+
+        this.fog = new THREE.FogExp2( 0x9999FF, 0.000025 );
     }
 }

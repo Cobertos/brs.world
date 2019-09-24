@@ -1,7 +1,21 @@
 import brs from "brs-js";
 import * as THREE from "three";
+import { InstancedStandardMaterial } from "./InstancedStandardMaterial";
 
 export class BRSMesh extends THREE.Mesh {
+  /**Returns the THREE.js units of one stud on a 1x1x1 brick so we can work with everything
+   * just as it exists in the BRS file and hopefully for how Brickadia sees it should we want
+   * to do more advanced measurements.
+   * NOTE: that when loaded from a BRS, a 1x1x1 will have a 5x5x6 .size property and a 1x1x1F will
+   * have a 5x5x2 .size property but when aligning with .position, everything is off. It seems Brickadia
+   * applies the 5x5x6 size to a 2x2x2 sized mesh (because it's 1 unit from center) so we need to multiply
+   * this by 2 when using BoxBufferGeometry as that is a 1x1x1 size mesh (0.5 unit from center).
+   * @returns {Number} The width of one brick
+   */
+  static brickWidth() {
+    return 5*2;
+  }
+
   constructor(brsjsData) {
     let [geo, mat] = BRSMesh._buildResources(brsjsData);
     super(geo, mat);
@@ -35,6 +49,7 @@ export class BRSMesh extends THREE.Mesh {
     
     //Instanced Mesh Workflow
     let baseGeo = new THREE.BoxBufferGeometry(1,1,1);
+    baseGeo.attributes.uv.array = baseGeo.attributes.uv.array.map((i)=>i/BRSMesh.brickWidth());
     let color = new THREE.Color(1,1,1);
     let buffGeo = new THREE.BufferGeometry();
     let instancePositions = [];
@@ -84,37 +99,25 @@ export class BRSMesh extends THREE.Mesh {
     instancedGeometry.addAttribute( 'instanceQuaternion', new THREE.InstancedBufferAttribute( new Float32Array( instanceQuaternions ), 4 ) );
     instancedGeometry.addAttribute( 'instanceScale', new THREE.InstancedBufferAttribute( new Float32Array( instanceScales ), 3 ) );
     instancedGeometry.addAttribute( 'instanceColor', new THREE.InstancedBufferAttribute( new Float32Array( instanceColors ), 3 ) );
-    
-    let shaderMaterial = new THREE.ShaderMaterial( {
-      uniforms: {},
-      vertexShader: `
-      precision highp float;
-          attribute vec3 instancePosition;
-          attribute vec4 instanceQuaternion;
-          attribute vec3 instanceScale;
-      attribute vec3 instanceColor;
-          varying vec3 vColor;
-          vec3 applyTRS( vec3 position, vec3 translation, vec4 quaternion, vec3 scale ) {
-              position *= scale;
-              position += 2.0 * cross( quaternion.xyz, cross( quaternion.xyz, position ) + quaternion.w * position );
-              return position + translation;
-          }
-          void main(){
-              vColor = instanceColor;//color;
-              vec3 transformed = applyTRS( position.xyz, instancePosition, instanceQuaternion, instanceScale );
-              gl_Position = projectionMatrix * modelViewMatrix * vec4( transformed, 1.0 );
-          }
-      `,
-      fragmentShader: `
-      precision highp float;
-          varying vec3 vColor;
-          void main() {
-              gl_FragColor = vec4( vColor, 1.0 );
-          }
-      `
-    } );
 
-    return [instancedGeometry, shaderMaterial];
+    let instancedMaterial = new InstancedStandardMaterial({
+      //vertexColors: THREE.VertexColors,
+      color: 0xFFFFAA,
+      flatShading: true,
+      map: undefined
+    });
+    new THREE.TextureLoader().load("brickTOP.png",(tex)=>{
+        tex.wrapS = THREE.RepeatWrapping;
+        tex.wrapT = THREE.RepeatWrapping;
+        //tex.anisotopy = 8;
+        instancedMaterial.map = tex;
+        instancedMaterial.needsUpdate = true;
+    });
+
+    // instantiate a loader
+    
+
+    return [instancedGeometry, instancedMaterial];
   }
 }
 
