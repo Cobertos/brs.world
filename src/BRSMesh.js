@@ -61,6 +61,11 @@ export class BRSMesh extends THREE.Mesh {
       if(idx % 1000 === 0) {
         console.log(`Brick ${idx}`);
       }
+      if(!br.visibility) {
+        //TODO: Put this in a list of meshs to render as wireframes
+        return; //Don't render invisibles
+      }
+
       let pos = new THREE.Vector3(br.position[0], br.position[2], br.position[1]);
       const axes = [
         new THREE.Vector3(1,0,0),  //Brickadia +X => THREE.js +X
@@ -101,8 +106,7 @@ export class BRSMesh extends THREE.Mesh {
     instancedGeometry.addAttribute( 'instanceColor', new THREE.InstancedBufferAttribute( new Float32Array( instanceColors ), 3 ) );
 
     let instancedMaterial = new InstancedStandardMaterial({
-      //vertexColors: THREE.VertexColors,
-      color: 0xFFFFAA,
+      vertexColors: THREE.VertexColors,
       flatShading: true,
       map: undefined
     });
@@ -110,8 +114,8 @@ export class BRSMesh extends THREE.Mesh {
         tex.wrapS = THREE.RepeatWrapping;
         tex.wrapT = THREE.RepeatWrapping;
         //tex.anisotopy = 8;
-        instancedMaterial.map = tex;
-        instancedMaterial.needsUpdate = true;
+        //instancedMaterial.map = tex;
+        //instancedMaterial.needsUpdate = true;
     });
 
     // instantiate a loader

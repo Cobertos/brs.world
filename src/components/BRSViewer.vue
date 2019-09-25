@@ -38,14 +38,14 @@ export default {
     this.cam.position.set(0,10,0);
 
     //Controls
-    let controls = new MapControls( this.cam, this.renderer.domElement );
+    //let controls = new MapControls( this.cam, this.renderer.domElement );
     //controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
     //controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
     //controls.dampingFactor = 0.05;
-    controls.screenSpacePanning = false;
-    controls.minDistance = 100;
-    controls.maxDistance = 500;
-    controls.maxPolarAngle = Math.PI / 2;
+    //controls.screenSpacePanning = false;
+    //controls.minDistance = 100;
+    //controls.maxDistance = 500;
+    //controls.maxPolarAngle = Math.PI / 2;
   },
   watch: {
     async brsBuff(){
@@ -66,10 +66,40 @@ export default {
         this.scene.add( mesh );
         
         //Do some calculations for the new camera path
+        //Find the center of gravity of all the bricks (the average vs the center of bounding box)
+        let positions = mesh.brs.bricks
+          .map((br)=>{
+            if(!br.visibility) { //TODO: Move into BRSMesh, these transformations shouldn't be out here
+              return undefined;
+            }
+            return new THREE.Vector3(br.position[0], br.position[2], br.position[1]);
+          })
+          .filter((vec)=>!!vec);
+        let centerOfGravity = positions.reduce((acc, vec)=>acc.add(vec), new THREE.Vector3(0,0,0))
+          .multiplyScalar(1/positions.length);
+        //Find the mean and standard deviation from the centerOfGravity
+        let distances = positions.map((vec)=>vec.distanceTo(centerOfGravity));
+        let meanDistance = distances.reduce((a,d)=>a+d,0) / positions.length;
+        let varianceSum = distances.reduce((a,d)=>a + Math.pow(Math.abs(d - meanDistance), 2), 0);
+        let stdDevDistance = Math.sqrt(varianceSum / positions.length);
+
+        //Compute the final camera bounding box discarding outliers
+        let outliers = 0;
         this.buildBounds = noObserve(new THREE.Box3());
         mesh.brs.bricks.forEach((br)=>{
+          let distance = new THREE.Vector3(br.position[0], br.position[2], br.position[1]).distanceTo(centerOfGravity);
+          if(distance > meanDistance + stdDevDistance * 3 || distance < meanDistance - stdDevDistance * 3) {
+            console.log(`Removed outlier at Brickadia position ${br.position} ${distance}`);
+            outliers++;
+            return;
+          }
           this.buildBounds.expandByPoint(new THREE.Vector3(br.position[0], br.position[2], br.position[1]));
         });
+        console.log(`Center: ${centerOfGravity.x} ${centerOfGravity.y} ${centerOfGravity.z}`);
+        console.log(`Mean: ${meanDistance}`);
+        console.log(`StdD: ${stdDevDistance}`);
+        console.log(`Outl: ${outliers}`);
+        console.log(`BrickCount: ${positions.length}`);
         console.log(this.buildBounds);
         this.rafID = window.requestAnimationFrame(this.render.bind(this));
     }
@@ -83,9 +113,9 @@ export default {
         let z = Math.cos(theta);
         let center = this.buildBounds.getCenter(new THREE.Vector3());
         let exts = this.buildBounds.getSize(new THREE.Vector3()).multiplyScalar(0.5);
-        //this.cam.position.copy(center);
-        //this.cam.position.add(new THREE.Vector3(exts.x * 1.5 * x, exts.y * 1.5, exts.z * 1.5 * z));
-        //this.cam.lookAt(center.clone().add(new THREE.Vector3(exts.x * x, 0, exts.z * z)));
+        this.cam.position.copy(center);
+        this.cam.position.add(new THREE.Vector3(exts.x * 1.5 * x, exts.y * 2, exts.z * 1.5 * z));
+        this.cam.lookAt(center.clone().add(new THREE.Vector3(exts.x * x, 0, exts.z * z)));
         this.renderer.render(this.scene, this.cam);
     }
   }
