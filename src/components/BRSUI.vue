@@ -36,61 +36,61 @@ export default {
         map: "Bowling Alley",
         author: {id: "xxx", name: "Cobertos"},
         description: "Bowling alley I made a long time back but it held up pretty well",
-        url: "https://s3.us-east-2.amazonaws.com/brs.world/builds/BowlingAlleyUpdatev0.3.brs"
-        //save_time: UTC as 8 bytes,
-        //brick_count: int,
-      },{
-        map: "Balloonist's Build Royale",
-        author: {id: "xxx", name: "Cobertos"},
-        description: "Islands featured in the Blockland trailer for an unfinished gamemode",
-        url: "https://s3.us-east-2.amazonaws.com/brs.world/builds/BBRMinimal8.brs"
-        //save_time: UTC as 8 bytes,
-        //brick_count: int,
-      },{
-        map: "de_cbble2",
-        author: {id: "xxx", name: "Cobertos"},
-        description: "Half of de_cbble2 from Counter Strike 1.6",
-        url: "https://s3.us-east-2.amazonaws.com/brs.world/builds/de_cbble2.brs"
-        //save_time: UTC as 8 bytes,
-        //brick_count: int,
-      },{
-        map: "Escher",
-        author: {id: "xxx", name: "Cobertos"},
-        description: "Escher-esque staircases",
-        url: "https://s3.us-east-2.amazonaws.com/brs.world/builds/escher4.brs"
-        //save_time: UTC as 8 bytes,
-        //brick_count: int,
-      },{
-        map: "Feel Good Inc Island",
-        author: {id: "xxx", name: "Cobertos"},
-        description: "The floating windmill island from the Gorillaz song Feel Good Inc",
-        url: "https://s3.us-east-2.amazonaws.com/brs.world/builds/FloatingIslandFINAL.brs"
-        //save_time: UTC as 8 bytes,
-        //brick_count: int,
-      },{
-        map: "Modern House",
-        author: {id: "xxx", name: "Cobertos"},
-        description: "A modern house with some secret bat cave like thing.",
-        url: "https://s3.us-east-2.amazonaws.com/brs.world/builds/ModernHouseThing9.brs"
-        //save_time: UTC as 8 bytes,
-        //brick_count: int,
-      },{
-        map: "Cloudy and Cobertos's Deathrun",
-        author: {id: "xxx", name: "Cloudy8"},
-        description: "Deathrun set in a jungle made for a custom Deathrun gamemode",
-        url: "https://s3.us-east-2.amazonaws.com/brs.world/builds/cloudysDeathrunRevivedv8.brs"
-      },{
-        map: "Mini Challenge",
-        author: {id: "xxx", name: "Cobertos"},
-        description: "A tiny parkour challenge",
-        url: "https://s3.us-east-2.amazonaws.com/brs.world/builds/myChallengeOnHatasServer.brs"
+        url: "https://s3.us-east-2.amazonaws.com/cobstatic.com/brs.world/builds/BowlingAlleyUpdatev0.3.brs"
         //save_time: UTC as 8 bytes,
         //brick_count: int,
       },{
         map: "Valley TDM",
         author: {id: "xxx", name: "Cobertos"},
         description: "A large TDM set in a valley with may interactable elements and easter eggs",
-        url: "https://s3.us-east-2.amazonaws.com/brs.world/builds/ValleyTDMFINALFINAL1.brs"
+        url: "https://s3.us-east-2.amazonaws.com/cobstatic.com/brs.world/builds/ValleyTDMFINALFINAL1.brs"
+        //save_time: UTC as 8 bytes,
+        //brick_count: int,
+      },{
+        map: "Balloonist's Build Royale",
+        author: {id: "xxx", name: "Cobertos"},
+        description: "Islands featured in the Blockland trailer for an unfinished gamemode",
+        url: "https://s3.us-east-2.amazonaws.com/cobstatic.com/brs.world/builds/BBRMinimal8.brs"
+        //save_time: UTC as 8 bytes,
+        //brick_count: int,
+      },{
+        map: "de_cbble2",
+        author: {id: "xxx", name: "Cobertos"},
+        description: "Half of de_cbble2 from Counter Strike 1.6",
+        url: "https://s3.us-east-2.amazonaws.com/cobstatic.com/brs.world/builds/de_cbble2.brs"
+        //save_time: UTC as 8 bytes,
+        //brick_count: int,
+      },{
+        map: "Escher",
+        author: {id: "xxx", name: "Cobertos"},
+        description: "Escher-esque staircases",
+        url: "https://s3.us-east-2.amazonaws.com/cobstatic.com/brs.world/builds/escher4.brs"
+        //save_time: UTC as 8 bytes,
+        //brick_count: int,
+      },{
+        map: "Feel Good Inc Island",
+        author: {id: "xxx", name: "Cobertos"},
+        description: "The floating windmill island from the Gorillaz song Feel Good Inc",
+        url: "https://s3.us-east-2.amazonaws.com/cobstatic.com/brs.world/builds/FloatingIslandFINAL.brs"
+        //save_time: UTC as 8 bytes,
+        //brick_count: int,
+      },{
+        map: "Modern House",
+        author: {id: "xxx", name: "Cobertos"},
+        description: "A modern house with some secret bat cave like thing.",
+        url: "https://s3.us-east-2.amazonaws.com/cobstatic.com/brs.world/builds/ModernHouseThing9.brs"
+        //save_time: UTC as 8 bytes,
+        //brick_count: int,
+      },{
+        map: "Cloudy and Cobertos's Deathrun",
+        author: {id: "xxx", name: "Cloudy8"},
+        description: "Deathrun set in a jungle made for a custom Deathrun gamemode",
+        url: "https://s3.us-east-2.amazonaws.com/cobstatic.com/brs.world/builds/cloudysDeathrunRevivedv8.brs"
+      },{
+        map: "Mini Challenge",
+        author: {id: "xxx", name: "Cobertos"},
+        description: "A tiny parkour challenge",
+        url: "https://s3.us-east-2.amazonaws.com/cobstatic.com/brs.world/builds/myChallengeOnHatasServer.brs"
         //save_time: UTC as 8 bytes,
         //brick_count: int,
       }]
