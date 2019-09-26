@@ -1,0 +1,72 @@
+@import "_func";
+
+:root {
+  margin:0;
+  padding:0;
+
+  //Font-size scales responsively with viewport with a slope
+  //defined by the value of vw
+  //Too much slope, and the font scales too fast, not easy to use in a small frame
+  //Not enough slope, and the font won't grow fast enough (too small in small and will
+  //definitely require another breakpoint)
+  //Adding fixed px values acts weird b/c while it shifts up, at small viewport sizes
+  //it will outweigh the viewport width and seem to "slow down" scaling
+  font-size: 2.5vw;
+  font-family: $rubik;
+  background-color: #FFFFFF;
+  color: $black;
+  line-height: 1.2;
+
+  //In desktop breakpoint, we are static at the given font-size
+  @include desktop {
+    font-size: 16px;
+  }
+}
+
+body, html {
+  margin:0;
+  padding:0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+img {
+  display: block;
+}
+
+a, a:visited, a:active {
+  color: $darkBlue;
+}
+a:hover {
+  color: lighten($darkBlue,10%);
+}
+
+p, ul, li, .base-text {
+  font-size: 11px;
+  @include desktop {
+    font-size: cRems(11px);
+  }
+}
+
+h2 {
+  font-size: cRems(45px);
+  @include desktop {
+    font-size: cRems(30px);
+  }
+}
+
+h3 {
+  font-size: cRems(40px);
+  @include desktop {
+    font-size: cRems(26px);
+  }
+}
+
+h4 {
+  font-size: cRems(35px);
+  @include desktop {
+    font-size: cRems(22px);
+  }
+}
