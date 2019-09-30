@@ -12,12 +12,13 @@
         <p v-if="error" v-text="error" />
         <button
           @click="$refs.fileUpload.click()">Open .brs</button>
-        <p v-if="fileToUpload">
-          {{fileToUpload.name}}{{fileToUpload.size}}
+        <div v-if="fileToUpload">
+          <p>{{fileToUpload.name}}</p>
+          <p v-if="brs">{{brs.author.name}} - {{brs.map}}</p>
           <button
             @click="uploadFile"
             :disabled="!fileUploadIsValid">Upload</button>
-        </p>
+        </div>
         <input type="file"
           ref="fileUpload"
           style="display:none"
@@ -60,7 +61,8 @@ export default {
       fileToUpload: undefined, //File object to upload
       error: undefined,        //An error in the BRS loading
       brsBuff: undefined,      //Buffer with brs data
-      brs: undefined,          //Brsjs object with all the data (loaded from above)
+      brs: undefined,          //Loaded from the buffer above with brs-js
+
       interacting: false,      //Whether the user is interacting with the sidebar
       api: new BRSWorldAPI(),  //API object
       brsInfoList: []          //List of brs's to load (pulled from backend)
