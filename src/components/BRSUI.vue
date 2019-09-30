@@ -9,20 +9,23 @@
       <div class="brs-header">
         <h1>BRS.world</h1>
         <p>View and share your Brickadia builds</p>
-        <p v-if="error" v-text="error" />
-        <button
-          @click="$refs.fileUpload.click()">Open .brs</button>
-        <div v-if="fileToUpload">
-          <p>{{fileToUpload.name}}</p>
-          <p v-if="brs">{{brs.author.name}} - {{brs.map}}</p>
+        <div class="brs-upload"
+          :class="{ 'upload-finished': uploadFinished }">
+          <p class="error" v-if="error" v-text="error" />
           <button
-            @click="uploadFile"
-            :disabled="!fileUploadIsValid">Upload</button>
+            @click="$refs.fileUpload.click()">Open .brs</button>
+          <div v-if="fileToUpload">
+            <p>{{fileToUpload.name}}</p>
+            <p v-if="brs">{{brs.author.name}} - {{brs.map}}</p>
+            <button
+              @click="uploadFile"
+              :disabled="!fileUploadIsValid">Upload</button>
+          </div>
+          <input type="file"
+            ref="fileUpload"
+            style="display:none"
+            @change="onFileChange($event)" />
         </div>
-        <input type="file"
-          ref="fileUpload"
-          style="display:none"
-          @change="onFileChange($event)" />
       </div>
       <div class="brs-list-container">
         <h2><u>Featured Builds</u></h2>
@@ -59,6 +62,7 @@ export default {
   data(){ 
     return {
       fileToUpload: undefined, //File object to upload
+      uploadFinished: false,
       error: undefined,        //An error in the BRS loading
       brsBuff: undefined,      //Buffer with brs data
       brs: undefined,          //Loaded from the buffer above with brs-js
@@ -135,9 +139,11 @@ export default {
     stopInteracting(){
       setTimeout(()=>this.interacting=false, 500);
     },
-    uploadFile(){
+    async uploadFile(){
       //TODO: Handle errors from the endpoint
-      this.api.uploadBuild(this.brsBuff);
+      await this.api.uploadBuild(this.brsBuff);
+      this.uploadFinished = true;
+      this.resetUpload();
     }
   }
 }
@@ -145,6 +151,10 @@ export default {
 
 <style lang="scss">
 @import "../scss/_func.scss";
+
+.error {
+  color: $bigRed;
+}
 
 .brs-main {
   position: absolute;
@@ -174,6 +184,21 @@ export default {
     padding: cRems(20px);
     h1 {
       margin-top: 0;
+    }
+
+    .brs-upload {
+      &.upload-finished {
+        animation: upload-finish-pop-fade 2s;
+      }
+
+      @keyframes upload-finish-pop-fade {
+        from {
+          background-color: white;
+        }
+        to {
+          background-color: transparent;
+        }
+      }
     }
   }
 
