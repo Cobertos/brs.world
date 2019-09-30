@@ -1,18 +1,22 @@
 <template>
   <div class="brs-container">
-    <BRSViewer :brsBuff="brsBuff" />
+    <BRSViewer :brsBuff="brsBuff"
+      @click.native="interacting = false" />
     <div class="brs-main"
-      :class="{'keep-open': interacting}"
+      :class="{'keep-open': keepSidebarOpen}"
       @mouseenter="interacting = true"
       @mouseleave="stopInteracting">
       <div class="brs-header">
         <h2>BRS.world</h2>
         <p>View and share your Brickadia builds</p>
+        <p v-if="error" v-text="error" />
         <button
-          @click="openFileUploader">Open .brs</button>
-        <p v-if="file">
-          {{file.name}}{{file.size}}
-          <button @click="uploadFile">Upload</button>
+          @click="$refs.fileUpload.click()">Open .brs</button>
+        <p v-if="fileToUpload">
+          {{fileToUpload.name}}{{fileToUpload.size}}
+          <button
+            @click="uploadFile"
+            :disabled="!fileUploadIsValid">Upload</button>
         </p>
         <input type="file"
           ref="fileUpload"
@@ -46,11 +50,13 @@ export default {
   },
   data(){ 
     return {
-      file: undefined, //upload file
-      brsBuff: undefined,
-      interacting: false,
-      api: new BRSWorldAPI(),
-      brsInfoList: []
+      fileToUpload: undefined, //File object to upload
+      error: undefined,        //An error in the BRS loading
+      brsBuff: undefined,      //Buffer with brs data
+      brs: undefined,          //Brsjs object with all the data (loaded from above)
+      interacting: false,      //Whether the user is interacting with the sidebar
+      api: new BRSWorldAPI(),  //API object
+      brsInfoList: []          //List of brs's to load (pulled from backend)
     }
   },
   computed: {
@@ -61,39 +67,64 @@ export default {
           ...obj
         };
       });
+    },
+    keepSidebarOpen(){
+      return this.interacting || //The boolean to keep it open a little longer than normal
+        !this.hasBRSToView       //If there's no file uploaded yet
+    },
+    hasBRSToView(){
+      return !!this.brs; //A successfully loaded brs
+    },
+    fileUploadIsValid(){
+      return !!this.fileToUpload &&
+        !this.error &&
+        this.brs;
     }
   },
   async mounted(){
     this.brsInfoList = (await this.api.getFeaturedBuilds()).items;
   },
   methods:{
+    resetUpload(){
+      this.$refs.fileUpload.value = '';
+      this.fileToUpload = undefined;
+    },
+    changeBRSData(brsBuff){
+      this.error = undefined;
+      this.brsBuff = brsBuff;
+      try {
+        this.brs = noObserve( BRS.read(brsBuff) );
+      }
+      catch(e) {
+        this.error = e.message;
+        this.brsBuff = undefined;
+        this.brs = undefined;
+        console.error(e);
+      }
+    },
     async onFileChange(e){
-      console.log(e);
+      //TODO: Reset the selected highlight
       const file = e.target.files[0];
+      this.fileToUpload = file ? noObserve(file) : undefined;
       if(!file) {
         return;
       }
-      this.file = noObserve(file);
       console.log("Start file convert...");
-      this.brsBuff = await file.arrayBuffer();
+      this.changeBRSData(await file.arrayBuffer());
     },
     async onEntryClick(e, brsInfo){
-      console.log(e);
-      if(e.target.tagName === "input") {
-        return;
-      }
+      this.resetUpload();
+      //TODO: Handle when the user is uploading and tries to change level
+
       //Load the BRSHMesh
       this.brsInfoWState.forEach((brsInfo)=>brsInfo.selected = false);
       brsInfo.selected = true;
       console.log("Start download...");
       const brsObj = await fetch(brsInfo.brsUrl);
-      this.brsBuff = await brsObj.arrayBuffer();
+      this.changeBRSData(await brsObj.arrayBuffer());
     },
     stopInteracting(){
       setTimeout(()=>this.interacting=false, 500);
-    },
-    openFileUploader(){
-      this.$refs.fileUpload.click();
     },
     uploadFile(){
       //TODO: Handle errors from the endpoint
