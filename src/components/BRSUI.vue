@@ -7,7 +7,7 @@
       @mouseenter="interacting = true"
       @mouseleave="stopInteracting">
       <div class="brs-header">
-        <h2>BRS.world</h2>
+        <h1>BRS.world</h1>
         <p>View and share your Brickadia builds</p>
         <p v-if="error" v-text="error" />
         <button
@@ -23,16 +23,23 @@
           style="display:none"
           @change="onFileChange($event)" />
       </div>
-      <div class="brs-list">
-        <div class="brs-list-item"
-          v-for="brsInfo in brsInfoWState"
-          :key="brsInfo.brsUrl"
-          @click="onEntryClick($event, brsInfo)"
-          :class="{selected: brsInfo.selected}">
-          <h2>{{brsInfo.name}}</h2>
-          <p>{{brsInfo.author}}</p>
-          <p v-if="false">{{brsInfo.description}}</p>
+      <div class="brs-list-container">
+        <h2><u>Featured Builds</u></h2>
+        <div class="brs-list">
+          <div class="brs-list-item"
+            v-for="brsInfo in brsInfoWState"
+            :key="brsInfo.brsUrl"
+            @click="onEntryClick($event, brsInfo)"
+            :class="{selected: brsInfo.selected}">
+            <h3>{{brsInfo.name}}</h3>
+            <p>{{brsInfo.author}}</p>
+            <p v-if="false">{{brsInfo.description}}</p>
+          </div>
         </div>
+      </div>
+      <div class="brs-footer">
+        <p>Made by <a href="http://twitter.com/cobertos" target="_blank">@Cobertos</a></p>
+        <p><a href="https://github.com/Cobertos/brs.world" target="_blank">Hosted on GitHub</a></p>
       </div>
     </div>
   </div>
@@ -146,9 +153,36 @@ export default {
   color: white;
   transition: left 0.2s;
   background-color: #333333;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 
   &:hover, &.keep-open {
     left: 0;
+  }
+
+  .brs-header, .brs-footer {
+    flex: 0 0 auto;
+  }
+  .brs-list-container {
+    flex: 1 0 auto;
+  }
+
+  .brs-header {
+    padding: cRems(20px);
+    h1 {
+      margin-top: 0;
+    }
+  }
+
+  > h2 {
+    border-top: 1px solid white;
+    margin: 0;
+    padding: cRems(12px);
+    > u {
+      border-bottom: 1px solid white;
+      text-decoration: none;
+    }
   }
 
   .brs-list{
@@ -157,7 +191,7 @@ export default {
     .brs-list-item {
       min-height: 40px;
       text-align: left;
-      padding: 20px;
+      padding: cRems(15px);
       //Interesting chevron effect
       /*background-image: 
           linear-gradient(100deg, rgba(0,0,0,0) 20px, #112222 20px, #112222 40px, rgba(0,0,0,0) 40px),
@@ -165,7 +199,7 @@ export default {
           linear-gradient(100deg, rgba(0,0,0,0) 100px, #112222 100px, #112222 120px, rgba(0,0,0,0) 120px),
           linear-gradient(100deg, rgba(0,0,0,0) 140px, #112222 140px);*/
       background-image: 
-        linear-gradient(to right, #CC4444 50%, #333333 50%);
+        linear-gradient(to right, $bigRed 50%, #333333 50%);
       background-position: 100% 0;
       background-size: 200% 200%;
       background-repeat: no-repeat;
@@ -181,7 +215,7 @@ export default {
       &.selected {
         animation: selected-fade 2s;
         background-image: none;
-        background-color: #CC4444;
+        background-color: $bigRed;
       }
 
       @keyframes selected-fade {
@@ -189,11 +223,11 @@ export default {
           background-color: white;
         }
         to {
-          background-color: #CC4444;
+          background-color: $bigRed;
         }
       }
 
-      h2 {
+      h3 {
         margin: 0;
       }
       p {
