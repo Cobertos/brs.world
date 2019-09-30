@@ -167,7 +167,7 @@ export default {
     flex: 0 0 auto;
   }
   .brs-list-container {
-    flex: 1 0 auto;
+    flex: 1 1 auto;
   }
 
   .brs-header {
@@ -187,7 +187,7 @@ export default {
     }
   }
 
-  .brs-list{
+  .brs-list-container {
     overflow-y: auto;
     user-select: none;
     .brs-list-item {
