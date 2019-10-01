@@ -31,11 +31,13 @@ export default {
       logarithmicDepthBuffer: true
     }));
     this.renderer.setClearColor(new THREE.Color(0x9999FF));
-    let rect = this.$refs.renderer.getBoundingClientRect();
-    this.renderer.setSize(rect.width, rect.height);
 
     //Setup the camera
     this.cam.position.set(0,10,0);
+
+    this.resize();
+    window.addEventListener('resize', this.resize.bind(this));
+    //TODO: Unbind on destroy
 
     //Controls
     //let controls = new MapControls( this.cam, this.renderer.domElement );
@@ -105,6 +107,13 @@ export default {
     }
   },
   methods:{
+    resize(){
+      this.$refs.renderer.setAttribute('style', '');
+      let rect = this.$refs.renderer.getBoundingClientRect();
+      this.renderer.setSize(rect.width, rect.height);
+      this.cam.aspect = rect.width / rect.height;
+      this.cam.updateProjectionMatrix();
+    },
     render(){
         this.rafID = window.requestAnimationFrame(this.render.bind(this));
         //look in a circle over the whole map after it loads
