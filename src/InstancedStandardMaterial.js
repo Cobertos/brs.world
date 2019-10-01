@@ -1,15 +1,15 @@
-import * as THREE from "three";
+import * as THREE from 'three';
 
 //You will have to make sure that you're using flatShading: true in the material
 //otherwise no lighting will show up. Normals just don't work right without
 //using the calculus version of the normals
 //BRSerker does a similar sort of thing, except manually
 export class InstancedStandardMaterial extends THREE.MeshStandardMaterial {
-      onBeforeCompile(shader, renderer){
-        //Copy pasta of 
-        //https://github.com/mrdoob/three.js/blob/master/src/renderers/shaders/ShaderLib/meshstandard_vert.glsl.js
-        //with some added stuff to take in an instancePosition, instanceQuaternion, etc...
-        shader.vertexShader =`
+  onBeforeCompile (shader, renderer) {
+    //Copy pasta of
+    //https://github.com/mrdoob/three.js/blob/master/src/renderers/shaders/ShaderLib/meshstandard_vert.glsl.js
+    //with some added stuff to take in an instancePosition, instanceQuaternion, etc...
+    shader.vertexShader = `
 #define STANDARD
 #define USE_UV
 varying vec3 vViewPosition;
@@ -81,7 +81,7 @@ void main() {
   //vColor = instanceColor;//color;
 }
         `;
-        shader.fragmentShader = `
+    shader.fragmentShader = `
 #define STANDARD
 #ifdef PHYSICAL
   #define REFLECTIVITY
@@ -183,5 +183,5 @@ void main() {
   #include <dithering_fragment>
 }
         `;
-      }
-    }
+  }
+}

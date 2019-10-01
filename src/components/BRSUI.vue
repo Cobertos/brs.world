@@ -50,6 +50,7 @@
 </template>
 
 <script>
+import BRS from 'brs-js';
 import { noObserve } from '../utils.js';
 import { BRSWorldAPI } from '../BRSWorldAPI.js';
 import BRSViewer from './BRSViewer.vue';
@@ -59,94 +60,93 @@ export default {
   components: {
     BRSViewer
   },
-  data(){ 
+  data () {
     return {
       fileToUpload: undefined, //File object to upload
       uploadFinished: false,
-      error: undefined,        //An error in the BRS loading
-      brsBuff: undefined,      //Buffer with brs data
-      brs: undefined,          //Loaded from the buffer above with brs-js
+      error: undefined, //An error in the BRS loading
+      brsBuff: undefined, //Buffer with brs data
+      brs: undefined, //Loaded from the buffer above with brs-js
 
-      interacting: false,      //Whether the user is interacting with the sidebar
-      api: new BRSWorldAPI(),  //API object
-      brsInfoList: []          //List of brs's to load (pulled from backend)
-    }
+      interacting: false, //Whether the user is interacting with the sidebar
+      api: new BRSWorldAPI(), //API object
+      brsInfoList: [] //List of brs's to load (pulled from backend)
+    };
   },
   computed: {
-    brsInfoWState(){
-      return this.brsInfoList.map((obj)=>{
+    brsInfoWState () {
+      return this.brsInfoList.map((obj) => {
         return {
           selected: false,
           ...obj
         };
       });
     },
-    keepSidebarOpen(){
+    keepSidebarOpen () {
       return this.interacting || //The boolean to keep it open a little longer than normal
-        !this.hasBRSToView       //If there's no file uploaded yet
+        !this.hasBRSToView; //If there's no file uploaded yet
     },
-    hasBRSToView(){
+    hasBRSToView () {
       return !!this.brs; //A successfully loaded brs
     },
-    fileUploadIsValid(){
+    fileUploadIsValid () {
       return !!this.fileToUpload &&
         !this.error &&
         this.brs;
     }
   },
-  async mounted(){
+  async mounted () {
     this.brsInfoList = (await this.api.getFeaturedBuilds()).items;
   },
-  methods:{
-    resetUpload(){
+  methods: {
+    resetUpload () {
       this.$refs.fileUpload.value = '';
       this.fileToUpload = undefined;
     },
-    changeBRSData(brsBuff){
+    changeBRSData (brsBuff) {
       this.error = undefined;
       this.brsBuff = brsBuff;
       try {
-        this.brs = noObserve( BRS.read(brsBuff) );
-      }
-      catch(e) {
+        this.brs = noObserve(BRS.read(brsBuff));
+      } catch (e) {
         this.error = e.message;
         this.brsBuff = undefined;
         this.brs = undefined;
         console.error(e);
       }
     },
-    async onFileChange(e){
+    async onFileChange (e) {
       //TODO: Reset the selected highlight
       const file = e.target.files[0];
       this.fileToUpload = file ? noObserve(file) : undefined;
-      if(!file) {
+      if (!file) {
         return;
       }
-      console.log("Start file convert...");
+      console.log('Start file convert...');
       this.changeBRSData(await file.arrayBuffer());
     },
-    async onEntryClick(e, brsInfo){
+    async onEntryClick (e, brsInfo) {
       this.resetUpload();
       //TODO: Handle when the user is uploading and tries to change level
 
       //Load the BRSHMesh
-      this.brsInfoWState.forEach((brsInfo)=>brsInfo.selected = false);
+      this.brsInfoWState.forEach((brsInfo) => { brsInfo.selected = false; });
       brsInfo.selected = true;
-      console.log("Start download...");
+      console.log('Start download...');
       const brsObj = await fetch(brsInfo.brsUrl);
       this.changeBRSData(await brsObj.arrayBuffer());
     },
-    stopInteracting(){
-      setTimeout(()=>this.interacting=false, 500);
+    stopInteracting () {
+      setTimeout(() => { this.interacting = false; }, 500);
     },
-    async uploadFile(){
+    async uploadFile () {
       //TODO: Handle errors from the endpoint
       await this.api.uploadBuild(this.brsBuff);
       this.uploadFinished = true;
       this.resetUpload();
     }
   }
-}
+};
 </script>
 
 <style lang="scss">
@@ -220,12 +220,12 @@ export default {
       text-align: left;
       padding: cRems(15px);
       //Interesting chevron effect
-      /*background-image: 
+      /*background-image:
           linear-gradient(100deg, rgba(0,0,0,0) 20px, #112222 20px, #112222 40px, rgba(0,0,0,0) 40px),
           linear-gradient(100deg, rgba(0,0,0,0) 60px, #112222 60px, #112222 80px, rgba(0,0,0,0) 80px),
           linear-gradient(100deg, rgba(0,0,0,0) 100px, #112222 100px, #112222 120px, rgba(0,0,0,0) 120px),
           linear-gradient(100deg, rgba(0,0,0,0) 140px, #112222 140px);*/
-      background-image: 
+      background-image:
         linear-gradient(to right, $bigRed 50%, #333333 50%);
       background-position: 100% 0;
       background-size: 200% 200%;

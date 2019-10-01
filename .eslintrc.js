@@ -10,7 +10,8 @@ module.exports = {
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
-    'extra-semicolon': 'off'
+    'semi': ['error', 'always'],
+    'spaced-comment': 'off'
   },
   parserOptions: {
     parser: 'babel-eslint'
@@ -25,4 +26,4 @@ module.exports = {
       }
     }
   ]
-}
+};
