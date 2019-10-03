@@ -7,25 +7,33 @@
       @mouseenter="interacting = true"
       @mouseleave="stopInteracting">
       <div class="brs-header">
-        <h1>BRS.world</h1>
-        <p>View and share your Brickadia builds</p>
-        <div class="brs-upload"
-          :class="{ 'upload-finished': uploadFinished }">
-          <p class="error" v-if="error" v-text="error" />
-          <button
-            @click="$refs.fileUpload.click()">Open .brs</button>
-          <div v-if="fileToUpload">
-            <p>{{fileToUpload.name}}</p>
-            <p v-if="brs">{{brs.author.name}} - {{brs.map}}</p>
+        <div class="brs-header-content">
+          <img class="logo" alt="brs.world logo" src="../assets/brsworld.svg">
+          <h1>BRS.world</h1>
+          <p>View and share your Brickadia builds</p>
+          <div class="brs-upload"
+            :class="{ 'upload-finished': uploadFinished }">
+            <p class="error" v-if="error" v-text="error" />
             <button
-              @click="uploadFile"
-              :disabled="!fileUploadIsValid">Upload</button>
+              @click="$refs.fileUpload.click()">Open .brs</button>
+            <div v-if="fileToUpload">
+              <p>{{fileToUpload.name}}</p>
+              <p v-if="brs">{{brs.author.name}} - {{brs.map}}</p>
+              <button
+                @click="uploadFile"
+                :disabled="!fileUploadIsValid">Upload</button>
+            </div>
+            <input type="file"
+              ref="fileUpload"
+              style="display:none"
+              @change="onFileChange($event)" />
           </div>
-          <input type="file"
-            ref="fileUpload"
-            style="display:none"
-            @change="onFileChange($event)" />
         </div>
+        <svg class="brs-header-bg" width="300" height="300">
+          <g id="cloud1" class="cloud"><path d="M-300,0C-300,0,300,0,300,0C500,33.33333333333333,500,66.66666666666666,300,100C200,161.6064433771357,100,161.6064433771357,0,100C-100,161.6064433771357,-200,161.6064433771357,-300,100C-500,66.66666666666666,-500,33.33333333333333,-300,0"></path></g>
+          <g id="cloud2" class="cloud"><path d="M-300,0C-300,0,300,0,300,0C500,33.33333333333333,500,66.66666666666666,300,100C200,161.6064433771357,100,161.6064433771357,0,100C-100,161.6064433771357,-200,161.6064433771357,-300,100C-500,66.66666666666666,-500,33.33333333333333,-300,0"></path></g>
+          <g id="cloud3" class="cloud"><path d="M-300,0C-300,0,300,0,300,0C500,33.33333333333333,500,66.66666666666666,300,100C200,161.6064433771357,100,161.6064433771357,0,100C-100,161.6064433771357,-200,161.6064433771357,-300,100C-500,66.66666666666666,-500,33.33333333333333,-300,0"></path></g>
+          </svg>
       </div>
       <div class="brs-list-container">
         <h2><u>Featured Builds</u></h2>
@@ -50,7 +58,7 @@
 </template>
 
 <script>
-import BRS from 'brs-js';
+import 'brs-js'; //On window.BRS (TODO: Fix this)
 import { noObserve } from '../utils.js';
 import { BRSWorldAPI } from '../BRSWorldAPI.js';
 import BRSViewer from './BRSViewer.vue';
@@ -186,6 +194,19 @@ export default {
       margin-top: 0;
     }
 
+    .brs-header-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .brs-header-bg {
+      position: absolute;
+      z-index: 1;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+    }
+
     .brs-upload {
       &.upload-finished {
         animation: upload-finish-pop-fade 2s;
@@ -289,6 +310,67 @@ export default {
     scrollbar-color: #AAAAAA #333333; //thumb track
     &:hover {
         scrollbar-color: #FFFFFF #333333; //thumb track
+    }
+  }
+
+  svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  .logo {
+    width: 60px;
+  }
+  .cloud {
+    pointer-events: none;
+    fill: #444;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200px;
+    transform: translateX();
+    animation: cloud1 13s linear infinite;
+
+    &:nth-child(2) {
+      fill: #555;
+      animation-delay: 7s;
+      animation: cloud2 22s linear infinite;
+    }
+    &:nth-child(3) {
+      fill: #666;
+      left: 0;
+      animation-delay: 3s;
+      animation: cloud3 17s linear infinite;
+    }
+  }
+
+  [alt="brs.world logo"] {
+    z-index: 4;
+    position: absolute;
+  }
+
+  @keyframes cloud1 {
+    0% {
+       transform: matrix(1,0,0,1,0,-10);
+    }
+    100% {
+       transform: matrix(1,0,0,1,300,-10);
+    }
+  }
+  @keyframes cloud2 {
+    0% {
+       transform: matrix(1,0,0,1,0,-30);
+    }
+    100% {
+       transform: matrix(1,0,0,1,300,-30);
+    }
+  }
+  @keyframes cloud3 {
+    0% {
+       transform: matrix(1,0,0,1,0,-50);
+    }
+    100% {
+       transform: matrix(1,0,0,1,300,-50);
     }
   }
 }

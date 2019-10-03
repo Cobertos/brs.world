@@ -1,4 +1,4 @@
-import BRS from 'brs-js';
+import 'brs-js'; //On window.BRS (TODO: Fix this)
 import * as THREE from 'three';
 import { InstancedStandardMaterial } from './InstancedStandardMaterial';
 
