@@ -8,9 +8,11 @@
       @mouseleave="stopInteracting">
       <div class="brs-header">
         <div class="brs-header-content">
-          <img class="logo" alt="brs.world logo" src="../assets/brsworld.svg">
-          <h1>BRS.world</h1>
-          <p>View and share your Brickadia builds</p>
+          <div class="brs-header-title">
+            <img class="logo" alt="brs.world logo" src="../assets/brsworld.svg">
+            <h1>BRS.world</h1>
+          </div>
+          <p>Share your Brickadia builds</p>
           <div class="brs-upload"
             :class="{ 'upload-finished': uploadFinished }">
             <p class="error" v-if="error" v-text="error" />
@@ -197,6 +199,20 @@ export default {
     .brs-header-content {
       position: relative;
       z-index: 2;
+
+      .brs-header-title {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+
+        .logo {
+          width: 60px;
+        }
+
+        h1 {
+          margin: 0;
+        }
+      }
     }
 
     .brs-header-bg {
@@ -318,9 +334,6 @@ export default {
     top: 0;
     left: 0;
   }
-  .logo {
-    width: 60px;
-  }
   .cloud {
     pointer-events: none;
     fill: #444;
@@ -342,11 +355,6 @@ export default {
       animation-delay: 3s;
       animation: cloud3 17s linear infinite;
     }
-  }
-
-  [alt="brs.world logo"] {
-    z-index: 4;
-    position: absolute;
   }
 
   @keyframes cloud1 {

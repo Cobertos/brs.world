@@ -44,10 +44,7 @@ a:hover {
 }
 
 p, ul, li, .base-text {
-  font-size: 11px;
-  @include desktop {
-    font-size: cRems(11px);
-  }
+  font-size: cRems(16px);
 }
 
 h2 {
@@ -68,5 +65,22 @@ h4 {
   font-size: cRems(35px);
   @include desktop {
     font-size: cRems(22px);
+  }
+}
+
+button, .button {
+  @extend .base-text;
+
+  border: cRems(1px) solid #FFF;
+  border-radius: cRems(5px);
+  background: transparent;
+  color: #FFF;
+  padding: cRems(2px) cRems(7px);
+  cursor: pointer;
+  transition: background 0.4s;
+
+  &:hover {
+    background-color: #FFF;
+    color: #000;
   }
 }
