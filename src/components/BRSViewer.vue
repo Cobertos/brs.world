@@ -1,5 +1,14 @@
 <template>
-  <canvas ref="renderer">No WebGL Boi</canvas>
+  <div>
+    <canvas ref="renderer">No WebGL Boi</canvas>
+    <div class="renderer-overlay"
+      v-if="canControl">
+      <transition name="hide">
+        <p key="1" v-if="!isControlling">Take control of the camera by clicking</p>
+        <p key="2" v-else>Press <kbd>Esc</kbd> to exit camera. <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> <kbd>Space</kbd> <kbd>Shift</kbd> to move. Mouse to look.</p>
+      </transition>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -21,7 +30,9 @@ export default {
       cam: noObserve(new THREE.PerspectiveCamera(75, 1, 1, 80000)),
       buildBounds: undefined,
       rafID: undefined,
-      controls: undefined,
+      controls: {
+        isLocked: false
+      },
       keyMap: {
         forward: false,
         backward: false,
@@ -34,6 +45,14 @@ export default {
       velocity: noObserve(new THREE.Vector3(0,0,0)),
       _lastTime: Date.now()
     };
+  },
+  computed:{
+    isControlling(){
+      return this.controls.isLocked;
+    },
+    canControl(){
+      return !!this.brsBuff; //Needs to have a level loaded
+    }
   },
   mounted () {
     //Setup the renderer
@@ -48,28 +67,35 @@ export default {
     this.cam.position.set(0, 10, 0);
 
     //Controls
-    this.controls = noObserve( new PointerLockControls( this.cam, this.renderer.domElement ) );
+    this.controls = noObserve( new PointerLockControls( this.cam, this.renderer.domElement ), Object.keys(this.controls) );
     const handleKey = (e)=>{
       let keyDown = e.type === 'keydown';
       switch (event.key) {
         case "Down": // IE/Edge specific value
         case "ArrowDown":
         case "s":
+        //If shift is held down 's' becomes 'S' so we need that as well
+        //(and even if we wanted to exclude, an 's' keydown can be a 'S'
+        //keyup later if shift is pressed in between)
+        case "S":
           this.keyMap.forward = keyDown;
           break;
         case "Up": // IE/Edge specific value
         case "ArrowUp":
         case "w":
+        case "W":
           this.keyMap.backward = keyDown;
           break;
         case "Left": // IE/Edge specific value
         case "ArrowLeft":
         case "a":
+        case "A":
           this.keyMap.left = keyDown;
           break;
         case "Right": // IE/Edge specific value
         case "ArrowRight":
         case "d":
+        case "D":
           this.keyMap.right = keyDown;
           break;
         case "Space":
@@ -93,6 +119,9 @@ export default {
       this.velocity.multiplyScalar(this.keyMap.sprint ? 2 : 1);
     };
     this.renderer.domElement.addEventListener('click', ()=>{
+      if(!this.canControl) {
+        return;
+      }
       this.enableControls();
     });
     /*this.controls.addEventListener( 'lock', function () {
@@ -215,6 +244,8 @@ export default {
 </script>
 
 <style lang="scss">
+@import "../scss/_func.scss";
+
 canvas {
   position: absolute;
   top: 0;
@@ -222,4 +253,34 @@ canvas {
   width: 100vw;
   height: 100vh;
 }
+.renderer-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 2;
+  pointer-events: none;
+  text-align: center;
+
+  > p {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+    opacity: 1.0;
+    padding: cRems(7px);
+    background-color: rgba(51,51,51,0.5);
+    border-radius: cRems(5px);
+    display: inline-block;
+
+    &.hide-enter-active, &.hide-leave-active {
+      transition: opacity .5s;
+    }
+    &.hide-leave-to, &.hide-enter {
+      opacity: 0.0;
+    }
+  }
+}
+
 </style>

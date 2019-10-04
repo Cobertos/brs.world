@@ -1,6 +1,8 @@
 @import "_func";
 
 :root {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   margin:0;
   padding:0;
 
@@ -13,8 +15,8 @@
   //it will outweigh the viewport width and seem to "slow down" scaling
   font-size: 2.5vw;
   font-family: $rubik;
-  background-color: #FFFFFF;
-  color: $black;
+  background-color: #333;
+  color: #FFF;
   line-height: 1.2;
 
   //In desktop breakpoint, we are static at the given font-size
@@ -45,6 +47,10 @@ a:hover {
 
 p, ul, li, .base-text {
   font-size: cRems(16px);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: Arial, sans-serif; //Title font
 }
 
 h2 {
@@ -83,4 +89,24 @@ button, .button {
     background-color: #FFF;
     color: #000;
   }
+}
+
+kbd {
+  display: inline-block;
+  border: cRems(1px) solid #FFF;
+  border-radius: cRems(5px);
+  background: transparent;
+  color: #FFF;
+  padding: cRems(7px) cRems(7px);
+  min-width: cRems(30px);
+  min-height: cRems(30px);
+  vertical-align: middle;
+  margin: 0 cRems(5px);
+}
+
+.hide-enter-active, .hide-leave-active {
+  transition: opacity 1.5s;
+}
+.hide-leave-to, .hide-enter {
+  opacity: 0.0;
 }

@@ -239,19 +239,21 @@ export default {
     }
   }
 
-  > h2 {
-    border-top: 1px solid white;
-    margin: 0;
-    padding: cRems(12px);
-    > u {
-      border-bottom: 1px solid white;
-      text-decoration: none;
-    }
-  }
-
   .brs-list-container {
     overflow-y: auto;
     user-select: none;
+
+    > h2 {
+      text-align: center;
+      margin: 0;
+      padding: cRems(12px);
+      > u {
+        border-bottom: 1px solid white;
+        text-decoration: none;
+      }
+    }
+
+
     .brs-list-item {
       min-height: 40px;
       text-align: left;
@@ -380,6 +382,10 @@ export default {
     100% {
        transform: matrix(1,0,0,1,300,-50);
     }
+  }
+
+  .brs-footer {
+    text-align: center;
   }
 }
 </style>
