@@ -7,7 +7,7 @@
 
 View and share your Brickadia builds!
 
-![Site development picture](media/brsworldGifHalf.gif)
+![Site development picture](media/brsWorldUpdate3.gif)
 
 ### Development
 
