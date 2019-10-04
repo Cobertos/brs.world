@@ -4,7 +4,7 @@
 
 <script>
 import * as THREE from 'three';
-//import { MapControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js';
 import { BRSMesh } from '../BRSMesh.js';
 import { BRSViewerScene } from '../BRSViewerScene.js';
 import { noObserve } from '../utils.js';
@@ -20,7 +20,19 @@ export default {
       scene: noObserve(new BRSViewerScene()),
       cam: noObserve(new THREE.PerspectiveCamera(75, 1, 1, 80000)),
       buildBounds: undefined,
-      rafID: undefined
+      rafID: undefined,
+      controls: undefined,
+      keyMap: {
+        forward: false,
+        backward: false,
+        right: false,
+        left: false,
+        up: false,
+        down: false,
+        sprint: false
+      },
+      velocity: noObserve(new THREE.Vector3(0,0,0)),
+      _lastTime: Date.now()
     };
   },
   mounted () {
@@ -35,19 +47,70 @@ export default {
     //Setup the camera
     this.cam.position.set(0, 10, 0);
 
+    //Controls
+    this.controls = noObserve( new PointerLockControls( this.cam, this.renderer.domElement ) );
+    const handleKey = (e)=>{
+      let keyDown = e.type === 'keydown';
+      switch (event.key) {
+        case "Down": // IE/Edge specific value
+        case "ArrowDown":
+        case "s":
+          this.keyMap.forward = keyDown;
+          break;
+        case "Up": // IE/Edge specific value
+        case "ArrowUp":
+        case "w":
+          this.keyMap.backward = keyDown;
+          break;
+        case "Left": // IE/Edge specific value
+        case "ArrowLeft":
+        case "a":
+          this.keyMap.left = keyDown;
+          break;
+        case "Right": // IE/Edge specific value
+        case "ArrowRight":
+        case "d":
+          this.keyMap.right = keyDown;
+          break;
+        case "Space":
+        case " ":
+          this.keyMap.up = keyDown;
+          break;
+        case "Shift":
+          this.keyMap.down = keyDown;
+          break;
+        case "Control":
+          this.keyMap.sprint = keyDown;
+          break;
+        default:
+          return; // Quit when this doesn't handle the key event.
+      }
+      e.preventDefault(); //We want to handle this key, so prevent default
+      this.velocity.x = (-this.keyMap.left + this.keyMap.right);
+      this.velocity.y = (-this.keyMap.down + this.keyMap.up);
+      this.velocity.z = (-this.keyMap.backward + this.keyMap.forward);
+      this.velocity.normalize();
+      this.velocity.multiplyScalar(this.keyMap.sprint ? 2 : 1);
+    };
+    this.renderer.domElement.addEventListener('click', ()=>{
+      this.enableControls();
+    });
+    /*this.controls.addEventListener( 'lock', function () {
+      instructions.style.display = 'none';
+      blocker.style.display = 'none';
+    } );
+    this.controls.addEventListener( 'unlock', function () {
+      blocker.style.display = 'block';
+      instructions.style.display = '';
+    } );*/
+    this.scene.add( this.controls.getObject() );
+
+    window.addEventListener( 'keydown' , handleKey);
+    window.addEventListener( 'keyup', handleKey);
+
     this.resize();
     window.addEventListener('resize', this.resize.bind(this));
     //TODO: Unbind on destroy
-
-    //Controls
-    //let controls = new MapControls( this.cam, this.renderer.domElement );
-    //controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
-    //controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
-    //controls.dampingFactor = 0.05;
-    //controls.screenSpacePanning = false;
-    //controls.minDistance = 100;
-    //controls.maxDistance = 500;
-    //controls.maxPolarAngle = Math.PI / 2;
   },
   watch: {
     async brsBuff () {
@@ -116,16 +179,36 @@ export default {
     },
     render () {
       this.rafID = window.requestAnimationFrame(this.render.bind(this));
-      //look in a circle over the whole map after it loads
-      let theta = Date.now() / 1000 / 30 * Math.PI * 2;
-      let x = Math.sin(theta);
-      let z = Math.cos(theta);
-      let center = this.buildBounds.getCenter(new THREE.Vector3());
-      let exts = this.buildBounds.getSize(new THREE.Vector3()).multiplyScalar(0.5);
-      this.cam.position.copy(center);
-      this.cam.position.add(new THREE.Vector3(exts.x * 1.5 * x, exts.y * 2, exts.z * 1.5 * z));
-      this.cam.lookAt(center.clone().add(new THREE.Vector3(exts.x * x, 0, exts.z * z)));
+
+      if(!this.controls.isLocked) {
+        //look in a circle over the whole map after it loads
+        let theta = Date.now() / 1000 / 30 * Math.PI * 2;
+        let x = Math.sin(theta);
+        let z = Math.cos(theta);
+        let center = this.buildBounds.getCenter(new THREE.Vector3());
+        let exts = this.buildBounds.getSize(new THREE.Vector3()).multiplyScalar(0.5);
+        this.cam.position.copy(center);
+        this.cam.position.add(new THREE.Vector3(exts.x * 1.5 * x, exts.y * 2, exts.z * 1.5 * z));
+        this.cam.lookAt(center.clone().add(new THREE.Vector3(exts.x * x, 0, exts.z * z)));
+      }
+      else {
+        let deltaTime = Date.now() - this._lastTime;
+        let camForward = this.cam.getWorldDirection(new THREE.Vector3());
+        let camRight = camForward.clone().cross(THREE.Object3D.DefaultUp).normalize();
+        let camUp = THREE.Object3D.DefaultUp.clone();
+        this.cam.position
+          .add(camForward.multiplyScalar(-this.velocity.z * deltaTime))
+          .add(camRight.multiplyScalar(this.velocity.x * deltaTime))
+          .add(camUp.multiplyScalar(this.velocity.y * deltaTime));
+      }
+      this._lastTime = Date.now();
       this.renderer.render(this.scene, this.cam);
+    },
+    disableControls(){
+      this.controls.unlock();
+    },
+    enableControls(){
+      this.controls.lock();
     }
   }
 };
