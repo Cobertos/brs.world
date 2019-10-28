@@ -1,0 +1,32 @@
+---
+name: Production Deploy
+
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  prod_build_site:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout repo
+      - uses: actions/checkout@v1
+      # Fix for it not checking out master (even when you pass it a ref)
+      # https://github.com/actions/checkout/issues/6
+      - run: git checkout "${GITHUB_REF:11}"
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 10.x
+      - name: npm ci
+        run: npm ci
+      - name: Production Build
+        run: npx nuxt generate --fail-on-page-error
+      # Make sure you add the GH_PAT secret to the .github actions
+      # Will eventually not need GH_PAT and will be able to use GITHUB_TOKEN in a coming PR
+      - uses: maxheld83/ghpages@v0.2.1
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+          BUILD_DIR: dist/
