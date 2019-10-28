@@ -1,0 +1,58 @@
+//SCSS stuffused in other files (variables, functions, etc)
+
+@function cRems($size) {
+  @return $size / 16px * 1rem;
+}
+
+@function cPct($pct) {
+  @return $pct / 2.5 * 1rem;
+}
+
+@mixin desktop {
+  @media only screen and (min-width : 768px) {
+    @content;
+  }
+}
+
+@import url('https://fonts.googleapis.com/css?family=Rubik:400,400i&display=swap');
+$bold: 700;
+
+$rubik: 'Rubik', monospace;
+
+$black: #000;
+$bigRed: #CC4444;
+$chillBlue: #11BBEE;
+
+.loader {
+  display: block;
+  width: cRems(30px);
+  height: cRems(30px);
+
+  &:before {
+    display: block;
+    content: '';
+    border-radius: 50%;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    border: cRems(5px) solid rgba(0, 0, 0, 0.2);
+    border-left: cRems(5px) solid #000;
+    animation: load360 1.1s infinite linear;
+  }
+  &.light:before {
+    border-color: rgba(255, 255, 255, 0.2);
+    border-left: cRems(5px) solid #fff;
+  }
+}
+@keyframes load360 {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.hr {
+  border-bottom: cRems(2px) solid #E7EAF1;
+}
